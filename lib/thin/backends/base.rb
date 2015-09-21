@@ -11,6 +11,7 @@ module Thin
     # If your backend is not based on EventMachine you also need to redefine
     # the +start+, +stop+, <tt>stop!</tt> and +config+ methods.
     class Base
+      include Logging
       # Server serving the connections throught the backend
       attr_accessor :server
       
@@ -84,10 +85,18 @@ module Thin
         # Close idle persistent connections
         @connections.each_value { |connection| connection.close_connection if connection.idle? }
         stop! if @connections.empty?
+
+        log_info "=====> dead connections begin from stop <====="
+        log_info @connections
+        log_info "=====> dead connections end from stop<====="
       end
       
       # Force stop of the backend NOW, too bad for the current connections.
       def stop!
+        log_info "=====> dead connections begin from stop <====="
+        log_info @connections
+        log_info "=====> dead connections end from stop<====="
+        
         @running  = false
         @stopping = false
         
